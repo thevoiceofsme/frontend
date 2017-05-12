@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="hx-amount.html">
+
+<dom-module id="hx-order-history">
+    <template>
+        <style>
+
+            paper-card {
+                border-radius: 4px;
+                overflow: auto;
+                max-width: 500px;
+                width: 90%;
+                padding-bottom: 8px;
+            }
+
+            paper-card div, h1 {
+                padding: 4px 16px;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+            .title {
+                background-color: #efefef;
+                border-bottom: 1px solid lightgrey;
+                margin-bottom: 8px;
+            }
+
+            .amount {
+                margin-right: 16px;
+            }
+
+            .price {
+                float: right;
+            }
+
+            paper-button.primary {
+                background-color: #112277;
+                color: white;
+                margin: 8px 16px;
+            }
+
+        </style>
+
+        <template is="dom-if" if="[[notEmpty(content)]]">
+            <paper-card elevation="1">
+
+                <h1 class="title">History</h1>
+
+                <template is="dom-repeat" items="[[_content]]">
+                    <div class="order">
+                        <span class="amount">[[addOne(index)]]</span>
+                        <a href="#"><b>#[[item.key]]</b>
+                            <small>[[item.name]]</small>
+                        </a>
+                        <span class="price"><hx-amount euros="[[computeTotal(item.order)]]"></hx-amount></span>
+                    </div>
+                </template>
+
+                <template is="dom-if" if="[[showMore]]">
+                    <paper-button class="primary">Older</paper-button>
+                </template>
+
+            </paper-card>
+        </template>
+
+
+    </template>
+
+    <script>
+        class HxOrderHistory extends Polymer.Element {
+            static get is() {
+                return 'hx-order-history';
+            }
+
+            static get properties() {
+                return {
+                    content: {
+                        type: Object,
+                        observer: '_computeTotal'
+                    },
+                    _content: {
+                        type: Object
+                    },
+                    showMore: {
+                        type: Boolean
+                    }
+                }
+            }
+
+            notEmpty(item) {
+                return item && item !== null;
+            }
+
+            _computeTotal() {
+
+                let keys = Object.keys(this.content);
+
+                this.showMore = !(this.content.length < 10);
+
+                this._content = keys.map((k) => {
+
+                    let date = new Date(parseInt(k));
+                    let formattedTime =
+                        date.getHours() + ':'
+                        + ("0" + date.getMinutes()).substr(-2) + ':'
+                        + ("0" + date.getSeconds()).substr(-2);
+                    return {key: k, name: formattedTime, order: this.content[k]}
+                })
+                    .reverse()
+                    .slice(1, 11);
+
+            }
+
+            addOne(number) {
+                return number + 1;
+            }
+
+            computeTotal(order) {
+                return (Object.values(order).reduce((acc, orderline) => {
+                    return acc + orderline.totalPrice;
+                }, 0));
+            }
+        }
+
+        window.customElements.define(HxOrderHistory.is, HxOrderHistory)
+        ;
+    </script>
+</dom-module>

@@ -1,0 +1,109 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="hx-amount.html">
+
+<dom-module id="hx-current-order">
+    <template>
+        <style>
+
+            paper-card {
+                border-radius: 4px;
+                overflow: auto;
+                max-width: 500px;
+                width: 90%;
+            }
+
+            paper-card div, h1 {
+                padding: 4px 16px;
+            }
+
+            h1, h2 {
+                margin: 0;
+            }
+
+            h2 {
+                font-size: 16px;
+                border-top: 1px solid grey;
+                margin: 8px 16px; /* same as paper-card div, h1 padding*/
+                padding: 8px 0;
+            }
+
+            .title {
+                background-color: #efefff;
+                border-bottom: 1px solid lightgrey;
+                margin-bottom: 8px;
+                font-size: 18px;
+            }
+
+            .amount {
+                margin-right: 16px;
+            }
+
+            .price {
+                float:right;
+             }
+
+        </style>
+        <template is="dom-if" if="[[notEmpty(content)]]">
+            <paper-card elevation="1">
+
+                <h1 class="title">Order: [[content.key]] <small class="price">[[time]]</small></h1>
+                <template is="dom-repeat" items="[[content.value]]">
+                    <div class="order">
+                        <span class="amount">[[item.amount]]x</span>
+                        <b>[[item.name]]</b>
+                        <span class="price"><hx-amount euros="[[item.totalPrice]]"></hx-amount></span>
+                    </div>
+                </template>
+                <h2 class="total">Total amount: <span class="price"><hx-amount euros="[[orderTotal]]"></hx-amount></span></h2>
+
+            </paper-card>
+        </template>
+
+    </template>
+
+    <script>
+        class HxCurrentOrder extends Polymer.Element {
+            static get is() {
+                return 'hx-current-order';
+            }
+
+            static get properties() {
+                return {
+                    content: {
+                        type: Object,
+                        observer: '_computeTotal'
+                    },
+                    orderTotal: {
+                        type: Number,
+                        value: function () {
+                            return 0;
+                        }
+                    },
+                    time: {
+                        type: String
+                    }
+                }
+            }
+
+            notEmpty(item){
+                return item && item !== null;
+            }
+
+            _computeTotal() {
+
+                let date = new Date(parseInt(this.content.key));
+                this.time  =
+                    date.getHours() + ':'
+                    + ("0" + date.getMinutes()).substr(-2) + ':'
+                    + ("0" + date.getSeconds()).substr(-2);
+
+                this.orderTotal = (Object.values(this.content.value).reduce((acc, order) => {
+                    return acc + order.totalPrice;
+                }, 0));
+            }
+        }
+
+        window.customElements.define(HxCurrentOrder.is, HxCurrentOrder);
+    </script>
+</dom-module>

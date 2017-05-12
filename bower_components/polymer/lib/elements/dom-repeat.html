@@ -6,7 +6,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><html><head><link rel="import" href="../../polymer-element.html">
+--><link rel="import" href="../../polymer-element.html">
 <link rel="import" href="../utils/templatize.html">
 <link rel="import" href="../utils/debounce.html">
 <link rel="import" href="../utils/flush.html">
@@ -155,8 +155,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         /**
          * The name of the variable to add to the binding scope with the index
-         * for the inst.  If `sort` is provided, the index will reflect the
-         * sorted order (rather than the original array order).
+         * of the instance in the sorted and filtered list of rendered items.
+         * Note, for the index in the `this.items` array, use the value of the
+         * `itemsIndexAs` property.
          */
         indexAs: {
           type: String,
@@ -165,8 +166,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         /**
          * The name of the variable to add to the binding scope with the index
-         * for the inst.  If `sort` is provided, the index will reflect the
-         * sorted order (rather than the original array order).
+         * of the instance in the `this.items` array. Note, for the index of
+         * this instance in the sorted and filtered list of rendered items,
+         * use the value of the `indexAs` property.
          */
         itemsIndexAs: {
           type: String,
@@ -683,4 +685,3 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 })();
 
 </script>
-</head><body></body></html>

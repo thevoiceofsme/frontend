@@ -6,7 +6,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><html><head><link rel="import" href="boot.html">
+--><link rel="import" href="boot.html">
 
 <script>
 (function() {
@@ -103,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * Enqueues a function called at `requestAnimationFrame` timing.
        *
-       * @memberof Polymer.Async.timeOut
+       * @memberof Polymer.Async.animationFrame
        * @param {Function} fn Callback to run
        * @return {number} Handle used for canceling task
        */
@@ -129,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * Enqueues a function called at `requestIdleCallback` timing.
        *
-       * @memberof Polymer.Async.timeOut
+       * @memberof Polymer.Async.idlePeriod
        * @param {function(IdleDeadline)} fn Callback to run
        * @return {number} Handle used for canceling task
        */
@@ -141,7 +141,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * Cancels a previously enqueued `idlePeriod` callback.
        *
-       * @memberof Polymer.Async.timeOut
+       * @memberof Polymer.Async.idlePeriod
        * @param {number} handle Handle returned from `run` of callback to cancel
        */
       cancel(handle) {
@@ -170,7 +170,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * Enqueues a function called at microtask timing.
        *
-       * @memberof Polymer.Async.timeOut
+       * @memberof Polymer.Async.microTask
        * @param {Function} callback Callback to run
        * @return {*} Handle used for canceling task
        */
@@ -183,6 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * Cancels a previously enqueued `microTask` callback.
        *
+       * @memberof Polymer.Async.microTask
        * @param {number} handle Handle returned from `run` of callback to cancel
        */
       cancel(handle) {
@@ -200,4 +201,3 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 })();
 </script>
-</head><body></body></html>

@@ -1,154 +1,187 @@
-<!--
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><html><head><link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
-<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
-<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../bower_components/app-route/app-location.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="my-icons.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
-</head><body><dom-module id="my-app">
-  <template>
-    <style>
-      :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
+<link rel="import" href="elements/hx-my-info.html">
+<link rel="import" href="elements/hx-order-history.html">
+<link rel="import" href="elements/hx-current-order.html">
 
-        display: block;
-      }
 
-      app-drawer-layout:not([narrow]) [drawer-toggle] {
-        display: none;
-      }
+<dom-module id="my-app">
+    <template>
+        <style>
 
-      app-header {
-        color: #fff;
-        background-color: var(--app-primary-color);
-      }
+            .HolyGrail {
+                display: flex;
+                min-height: 100%; /* 1, 3 */
+                flex-direction: column;
+            }
 
-      app-header paper-icon-button {
-        --paper-icon-button-ink-color: white;
-      }
+            .HolyGrail-header {
+                flex: none; /* 2 */
+            }
 
-      .drawer-list {
-        margin: 0 20px;
-      }
+            .HolyGrail-header {
+                background-color: #ff5400;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+            }
 
-      .drawer-list a {
-        display: block;
-        padding: 0 16px;
-        text-decoration: none;
-        color: var(--app-secondary-color);
-        line-height: 40px;
-      }
+            .HolyGrail-body {
+                display: flex;
+                flex: 1;
+                flex-direction: column;
+            }
 
-      .drawer-list a.iron-selected {
-        color: black;
-        font-weight: bold;
-      }
-    </style>
+            .HolyGrail-content {
+                margin-top: 8px;
+                padding:16px;
+            }
 
-    <app-location route="{{route}}"></app-location>
-    <app-route route="{{route}}" pattern="/:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+            .HolyGrail-nav {
+                order: -1;
+                background-color: #dedede;
+                width: 200px;
+            }
 
-    <app-drawer-layout fullbleed="">
-      <!-- Drawer content -->
-      <app-drawer id="drawer" slot="drawer">
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
-          <a name="view2" href="/view2">View Two</a>
-          <a name="view3" href="/view3">View Three</a>
-        </iron-selector>
-      </app-drawer>
+            .HolyGrail-nav li {
+                height: 20px;
+                padding: 8px;
+                color: #333;
+                border-radius: 4px;
+                margin: 4px;
+                cursor: hand;
+            }
 
-      <!-- Main content -->
-      <app-header-layout has-scrolling-region="">
+            .HolyGrail-nav li:hover {
+                background: #eee;
+            }
 
-        <app-header slot="header" condenses="" reveals="" effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="my-icons:menu" drawer-toggle=""></paper-icon-button>
-            <div main-title="">My App</div>
-          </app-toolbar>
-        </app-header>
+            .HolyGrail-nav li.active {
+                color: white;
+                background: #ff5400;
+                font-weight: bold;
+            }
 
-        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
-        </iron-pages>
-      </app-header-layout>
-    </app-drawer-layout>
-  </template>
+            .HolyGrail-nav, .HolyGrail-content {
+                overflow: auto;
+            }
 
-  <script>
-    class MyApp extends Polymer.Element {
+            @media (min-width: 768px) {
+                .HolyGrail-body {
+                    flex-direction: row;
+                }
 
-      static get is() { return 'my-app'; }
+                .HolyGrail-content {
+                    display: inline-block;
+                }
 
-      static get properties() {
-        return {
-          page: {
-            type: String,
-            reflectToAttribute: true,
-            observer: '_pageChanged',
-          },
-        };
-      }
+                .HolyGrail-nav {
+                    flex: 0 0 12em;
+                }
 
-      static get observers() {
-        return [
-          '_routePageChanged(routeData.page)',
-        ];
-      }
+                .HolyGrail-header {
+                    display: flex;
+                    flex-direction: row;
+                }
 
-      _routePageChanged(page) {
-        // Polymer 2.0 will call with `undefined` on initialization.
-        // Ignore until we are properly called with a string.
-        if (page === undefined) {
-          return;
+                #search {
+                    width: 90%;
+                    margin: 0 10px;
+                }
+            }
+
+            #search {
+                width: 90%;
+                margin: 0 10px;
+            }
+
+            #search paper-input {
+                padding: 4px;
+            }
+
+
+        </style>
+
+        <!-- See https://philipwalton.github.io/solved-by-flexbox/demos/holy-grail/
+        for explanation of the setup below. -->
+
+
+        <iron-ajax id="ajax" auto="" url="https://the-voice-of-sme.firebaseio.com/orders.json" handle-as="json" on-response="handleResponse"></iron-ajax>
+
+
+        <div id="container" class="HolyGrail">
+            <div id="header" class="HolyGrail-header">
+                <hx-my-info></hx-my-info>
+
+                <paper-card id="search" style="background-color: white;">
+                    <paper-input label="Search"></paper-input>
+                </paper-card>
+            </div>
+            <div class="HolyGrail-body">
+                <div id="content" class="HolyGrail-content">
+
+                    <!-- iron pages -->
+
+                    <!-- some polyfire element -->
+
+
+                    <hx-current-order content="[[lastOrderData]]"></hx-current-order>
+                    <hx-order-history content="[[ordersData]]"></hx-order-history>
+
+                </div>
+                <div id="navigation" class="HolyGrail-nav">
+
+                    <ul>
+                        <li>Orders</li>
+                        <li class="active">Overview</li>
+                        <li>Inventory</li>
+                        <li>Invoices</li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class MyApp extends Polymer.Element {
+
+            static get is() {
+                return 'my-app';
+            }
+
+            static get properties() {
+                return {
+                    ordersData: {
+                        type: Object
+                    },
+                    lastOrderData: {
+                        type: Object
+                    }
+                };
+            }
+
+            handleResponse(data) {
+
+                let maxKey = Object.keys(data.detail.response)
+                    .reduce((acc, value) => {
+                        return Math.max(acc, value);
+                    });
+
+                let maxData = data.detail.response[maxKey];
+
+
+                this.lastOrderData = {key: maxKey, value: maxData};
+                this.ordersData = data.detail.response;
+
+                //Polymer.Async.timeOut.after(1000).run(() => this.$.ajax.generateRequest());
+            }
         }
 
-        // If no page was found in the route data, page will be an empty string.
-        // Deault to 'view1' in that case.
-        this.page = page || 'view1';
-
-        // Close a non-persistent drawer when the page & route are changed.
-        if (!this.$.drawer.persistent) {
-          this.$.drawer.close();
-        }
-      }
-
-      _pageChanged(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
-        Polymer.importHref(
-            resolvedPageUrl,
-            null,
-            this._showPage404.bind(this),
-            true);
-      }
-
-      _showPage404() {
-        this.page = 'view404';
-      }
-    }
-
-    window.customElements.define(MyApp.is, MyApp);
-  </script>
+        window.customElements.define(MyApp.is, MyApp);
+    </script>
 </dom-module>
-</body></html>

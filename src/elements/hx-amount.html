@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hx-amount">
+    <template>€[[euros]]<small><sup>,[[cents]]</sup></small></template>
+        <script>
+            class HxAmount extends Polymer.Element {
+                static get is() {
+                    return 'hx-amount';
+                }
+
+                static get properties() {
+                    return {
+                        euros: {
+                            type: Number,
+                            value: 0
+                        },
+                        cents: {
+                            type: String,
+                            value: '00'
+                        }
+                    }
+                }
+            }
+
+            window.customElements.define(HxAmount.is, HxAmount);
+        </script>
+</dom-module>
