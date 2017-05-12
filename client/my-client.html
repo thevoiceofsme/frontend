@@ -1,0 +1,72 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+
+
+<dom-module id="my-client">
+    <template>
+        <style>
+
+            .top{
+                height: 10%;
+                background-color: #ff5400;
+            }
+
+            .bottom {
+                background-color: white;
+                height: 90%;
+            }
+        </style>
+
+        <!-- See https://philipwalton.github.io/solved-by-flexbox/demos/holy-grail/
+        for explanation of the setup below. -->
+
+
+        <iron-ajax id="ajax" auto="" url="https://the-voice-of-sme.firebaseio.com/orders.json" handle-as="json" on-response="handleResponse"></iron-ajax>
+
+
+        <div class="header"></div>
+        <div class="body"></div>
+
+    </template>
+
+    <script>
+        class MyClient extends Polymer.Element {
+
+            static get is() {
+                return 'my-client';
+            }
+
+            static get properties() {
+                return {
+                    ordersData: {
+                        type: Object
+                    },
+                    lastOrderData: {
+                        type: Object
+                    }
+                };
+            }
+
+            handleResponse(data) {
+
+                let maxKey = Object.keys(data.detail.response)
+                    .reduce((acc, value) => {
+                        return Math.max(acc, value);
+                    });
+
+                let maxData = data.detail.response[maxKey];
+
+
+                this.lastOrderData = {key: maxKey, value: maxData};
+                this.ordersData = data.detail.response;
+
+                //Polymer.Async.timeOut.after(1000).run(() => this.$.ajax.generateRequest());
+            }
+        }
+
+        window.customElements.define(MyClient.is, MyClient);
+    </script>
+</dom-module>
