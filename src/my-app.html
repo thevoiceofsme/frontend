@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="elements/hx-my-info.html">
@@ -37,14 +38,14 @@
 
             .HolyGrail-content {
                 margin-top: 8px;
-                padding:16px;
+                padding: 16px;
             }
 
             #navigation {
                 order: -1;
                 background-color: #dedede;
                 width: 200px;
-                display:none !important;
+                display: none !important;
             }
 
             .HolyGrail-nav li {
@@ -69,7 +70,6 @@
             .HolyGrail-nav, .HolyGrail-content {
                 overflow: auto;
             }
-
 
             @media (min-width: 768px) {
                 .HolyGrail-body {
@@ -125,14 +125,10 @@
             <div class="HolyGrail-body">
                 <div id="content" class="HolyGrail-content">
 
-                    <!-- iron pages -->
-
-                    <!-- some polyfire element -->
-
-
                     <hx-current-order content="[[lastOrderData]]"></hx-current-order>
                     <hx-order-history content="[[ordersData]]"></hx-order-history>
 
+                    <paper-toggle-button on-tap="toggleReload"></paper-toggle-button>
                 </div>
                 <div id="navigation" class="HolyGrail-nav">
 
@@ -163,6 +159,9 @@
                     },
                     lastOrderData: {
                         type: Object
+                    },
+                    reload: {
+                        type: Boolean
                     }
                 };
             }
@@ -176,11 +175,28 @@
 
                 let maxData = data.detail.response[maxKey];
 
-
                 this.lastOrderData = {key: maxKey, value: maxData};
                 this.ordersData = data.detail.response;
 
-                //Polymer.Async.timeOut.after(1000).run(() => this.$.ajax.generateRequest());
+                this.reloadNow();
+            }
+
+            reloadNow() {
+                if (this.reload) {
+                    Polymer.Async.timeOut.after(500).run(() => {
+                            this.$.ajax.generateRequest()
+                        }
+                    );
+                }
+            }
+
+            toggleReload() {
+                if (this.reload) {
+                    this.reload = !this.reload;
+                } else {
+                    this.reload = true;
+                }
+                this.reloadNow();
             }
         }
 

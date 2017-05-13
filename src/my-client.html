@@ -1,0 +1,313 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="elements/hx-current-order.html">
+<link rel="import" href="elements/hx-amount.html">
+
+<dom-module id="my-client">
+    <template>
+        <style>
+
+            .header {
+                height: 100px;
+                background-color: #ff5400;
+                width: 100%;
+                margin-bottom: 50px;
+                color: white;
+            }
+
+            .card {
+                display: block;
+                background-color: white;
+                color: grey;
+                font-size: 18px;
+                padding: 4px;
+                border-radius: 4px;
+                border: 1px solid grey;
+                width: 96%;
+                height: 60px;
+                margin: auto;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                margin: 0;
+                padding: 20px;
+            }
+
+            .intro {
+                margin: 8px;
+                color: #ff5400;
+            }
+
+            .callToAction {
+                margin: 8px;
+                font-size: 18px;
+            }
+
+            .body {
+                background-color: white;
+                height: 600px;
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .amount {
+                margin-right: 16px;
+            }
+
+            .price {
+                float:right;
+            }
+
+            .menu-item {
+                min-width: 300px;
+                max-width: 610px;
+                height: 315px;
+                margin: 10px;
+            }
+
+            .headline {
+                font-weight: bold;
+                font-size: 24px;
+                position: relative;
+                left: 50px;
+                bottom: 100px;
+                color: white;
+                text-shadow: -1px 1px 0 #333;
+            }
+
+            .subtitle {
+                font-size: 14px;
+                position: relative;
+                left: 50px;
+                bottom: 200px;
+                color: white;
+                border-radius: 4px;
+                padding: 8px;
+            }
+
+            .bg-purple {
+                background-color: #AB0066;
+            }
+
+            .bg-blue {
+                background-color: #525199;
+            }
+
+            .menu-price {
+                font-weight: bold;
+                font-size: 36px;
+                position: relative;
+                left: 250px;
+                bottom: 150px;
+                color: white;
+                text-shadow: -1px 1px 0 #333;
+            }
+
+            .qr-image {
+                width: 200px;
+                height: 200px;
+            }
+
+            h1.pay-card{
+
+                color: #ff5400;
+                margin:0 0 8px 0;
+                border-bottom: 1px solid lightgrey;
+                padding: 8px 16px 8px 16px;
+            }
+
+            .order, .total {
+                padding: 8px 16px 8px 16px;
+            }
+
+        </style>
+
+        <!-- See https://philipwalton.github.io/solved-by-flexbox/demos/holy-grail/
+        for explanation of the setup below. -->
+
+
+        <iron-ajax id="ajax" auto="" url="https://the-voice-of-sme.firebaseio.com/orders.json" handle-as="json" on-response="handleResponse"></iron-ajax>
+
+        <iron-ajax id="paycall" url="http://33abb81b.ngrok.io/pay" handle-as="json" method="get">
+        </iron-ajax>
+
+        <div class="header">
+            <h1>The Lion’s Den</h1>
+            <div class="card">
+                <p class="intro"> Hi there, welcome to The Lion’s Den. Home of the Grill</p>
+                <h2 class="callToAction">When you’re ready to make your order just say ‘okay Google’ followed by
+                    products you want!</h2>
+            </div>
+        </div>
+        <div class="body">
+
+            <template is="dom-if" if="[[!showQR]]">
+
+                <paper-material elevation="1" class="menu-item" id="order">
+
+                    <h1 class="pay-card">Your Order</h1>
+
+                    <template is="dom-repeat" items="[[lastOrderData.value]]">
+                        <div class="order">
+                            <span class="amount">[[item.amount]]x</span>
+                            <b>[[toUpper(item.name)]]</b>
+                            <span class="price"><hx-amount euros="[[item.totalPrice]]"></hx-amount></span>
+                        </div>
+                    </template>
+
+                    <h2 class="total">Total amount: <span class="price"><hx-amount euros="[[orderTotal]]"></hx-amount></span></h2>
+
+                </paper-material>
+
+                <paper-material elevation="1" class="menu-item" id="qr">
+                    <h1 class="pay-card">Pay by QR Code</h1>
+                    <img class="qr-image" src="../images/static_qr_code.jpg" on-tap="pay">
+                    <paper-button on-tap="pay">Henk</paper-button>
+                </paper-material>
+
+
+            </template>
+            <template is="dom-if" if="[[showQR]]">
+                <div class="menu-item">
+                    <img src="../images/Lion_Burger_610x315.png">
+                    <h1 class="headline">The Legendary Lion Burger</h1>
+                    <span class="subtitle bg-blue">Orange Sauce -  Angus Beef </span>
+                    <span class="menu-price">€9,95</span>
+                </div>
+                <div class="menu-item">
+                    <img src="../images/Polish_Bigos_610x315.png">
+                    <h1 class="headline">The Polish Special Bigos</h1>
+                    <span class="subtitle bg-blue">Traditional Recipe -  Herbs &amp; Spices</span>
+                    <span class="menu-price">€2,95</span>
+                </div>
+                <div class="menu-item">
+                    <img src="../images/Cola_610x315.png">
+                    <h1 class="headline">Refreshing sip of Coca-Cola</h1>
+                    <span class="subtitle bg-purple">Served Ice Cold - Original Flavour</span>
+                    <span class="menu-price">€2,95</span>
+                </div>
+                <div class="menu-item">
+                    <img src="../images/Vodka_610x315.png">
+                    <h1 class="headline">Vodka Boost</h1>
+                    <span class="subtitle bg-purple">Authentic Taste - Polish Finest</span>
+                    <span class="menu-price">€1,95</span>
+                </div>
+            </template>
+
+            <paper-toggle-button on-tap="toggleReload"></paper-toggle-button>
+        </div>
+
+    </template>
+
+    <script>
+        class MyClient extends Polymer.Element {
+
+            static get is() {
+                return 'my-client';
+            }
+
+            toUpper(woord){
+                return woord[0].toUpperCase() + woord.slice(1, woord.length);
+            }
+
+            static get properties() {
+                return {
+                    ordersData: {
+                        type: Object,
+                        observer: '_computeTotal'
+                    },
+                    lastOrderData: {
+                        type: Object,
+                        observer: 'computeShowQR'
+                    },
+                    showQR: {
+                        type: Boolean
+                    },
+                    orderTotal: {
+                        type: Number,
+                        value: function () {
+                            return 0;
+                        }
+                    },
+                    orderPaid: {
+                        type: Boolean
+                    },
+                    time: {
+                        type: String
+                    }
+                };
+            }
+
+            handleResponse(data) {
+
+                let maxKey = Object.keys(data.detail.response)
+                    .reduce((acc, value) => {
+                        return Math.max(acc, value);
+                    });
+
+                let maxData = data.detail.response[maxKey];
+
+
+                this.lastOrderData = {key: maxKey, value: maxData};
+                this.ordersData = data.detail.response;
+
+                this.reloadNow();
+            }
+
+            reloadNow() {
+                if (this.reload) {
+                    Polymer.Async.timeOut.after(500).run(() => {
+                            this.$.ajax.generateRequest()
+                        }
+                    );
+                }
+            }
+
+            computeShowQR() {
+                if (!this.lastOrderData) {
+                    return false;
+                }
+                this.showQR = this.lastOrderData.value[0].paid;
+            }
+
+            _computeTotal() {
+
+                let date = new Date(parseInt(this.lastOrderData.key));
+                this.time  =
+                    date.getHours() + ':'
+                    + ("0" + date.getMinutes()).substr(-2) + ':'
+                    + ("0" + date.getSeconds()).substr(-2);
+
+                this.orderTotal = (Object.values(this.lastOrderData.value).reduce((acc, order) => {
+                    return acc + order.totalPrice;
+                }, 0));
+
+                this.orderPaid = this.lastOrderData.value[0].paid;
+            }
+
+            pay(e){
+                this.$.paycall.generateRequest();
+            }
+
+            toggleReload() {
+                if (this.reload) {
+                    this.reload = !this.reload;
+                } else {
+                    this.reload = true;
+                }
+                this.reloadNow();
+            }
+        }
+
+        window.customElements.define(MyClient.is, MyClient);
+    </script>
+</dom-module>

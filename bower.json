@@ -22,7 +22,8 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.4",
     "paper-card": "PolymerElements/paper-card#2.0-preview",
     "paper-input": "PolymerElements/paper-input#2.0-preview",
-    "polymerfire": "firebase/polymerfire#2.0-preview"
+    "polymerfire": "firebase/polymerfire#2.0-preview",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#2.0-preview"
   },
   "devDependencies": {
     "web-component-tester": "6.0.0-prerelease.5"

@@ -43,15 +43,26 @@
                 float:right;
              }
 
+            .paid {
+                background-color: #ab0066;
+                border-radius: 4px;
+                padding: 2px 8px 2px 8px;
+                font-size: 14px;
+                color: white;
+                font-weight: normal;
+            }
+
         </style>
         <template is="dom-if" if="[[notEmpty(content)]]">
             <paper-card elevation="1">
 
-                <h1 class="title">Order: [[content.key]] <small class="price">[[time]]</small></h1>
+                <h1 class="title">Order: [[content.key]]
+                    <template is="dom-if" if="[[orderPaid]]"><span class="paid">Paid</span></template>
+                    <small class="price">[[time]]</small></h1>
                 <template is="dom-repeat" items="[[content.value]]">
                     <div class="order">
                         <span class="amount">[[item.amount]]x</span>
-                        <b>[[item.name]]</b>
+                        <b>[[toUpper(item.name)]]</b>
                         <span class="price"><hx-amount euros="[[item.totalPrice]]"></hx-amount></span>
                     </div>
                 </template>
@@ -80,6 +91,9 @@
                             return 0;
                         }
                     },
+                    orderPaid: {
+                        type: Boolean
+                    },
                     time: {
                         type: String
                     }
@@ -88,6 +102,10 @@
 
             notEmpty(item){
                 return item && item !== null;
+            }
+
+            toUpper(woord){
+                return woord[0].toUpperCase() + woord.slice(1, woord.length);
             }
 
             _computeTotal() {
@@ -101,6 +119,8 @@
                 this.orderTotal = (Object.values(this.content.value).reduce((acc, order) => {
                     return acc + order.totalPrice;
                 }, 0));
+
+                this.orderPaid = this.content.value[0].paid;
             }
         }
 
