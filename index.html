@@ -116,6 +116,7 @@
     // subsequent calls to getToken will return from cache.
     messaging.getToken().then(function(currentToken) {
       if (currentToken) {
+          console.log("token: ", currentToken);
         sendTokenToServer(currentToken);
         updateUIForPushEnabled(currentToken);
       } else {
