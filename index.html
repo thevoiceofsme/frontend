@@ -107,51 +107,7 @@
     // [END_EXCLUDE]
   });
   // [END receive_message]
-        <script>
-  // [START get_messaging_object]
-  // Retrieve Firebase Messaging object.
-  const messaging = firebase.messaging();
-  // [END get_messaging_object]
-  // [START set_public_vapid_key]
-  // Add the public key generated from the console here.
-  messaging.usePublicVapidKey('<YOUR_PUBLIC_VAPID_KEY_HERE>');
-  // [END set_public_vapid_key]
-  // IDs of divs that display Instance ID token UI or request permission UI.
-  const tokenDivId = 'token_div';
-  const permissionDivId = 'permission_div';
-  // [START refresh_token]
-  // Callback fired if Instance ID token is updated.
-  messaging.onTokenRefresh(function() {
-    messaging.getToken().then(function(refreshedToken) {
-      console.log('Token refreshed.');
-      // Indicate that the new Instance ID token has not yet been sent to the
-      // app server.
-      setTokenSentToServer(false);
-      // Send Instance ID token to app server.
-      sendTokenToServer(refreshedToken);
-      // [START_EXCLUDE]
-      // Display new Instance ID token and clear UI of all previous messages.
-      resetUI();
-      // [END_EXCLUDE]
-    }).catch(function(err) {
-      console.log('Unable to retrieve refreshed token ', err);
-      showToken('Unable to retrieve refreshed token ', err);
-    });
-  });
-  // [END refresh_token]
-  // [START receive_message]
-  // Handle incoming messages. Called when:
-  // - a message is received while the app has focus
-  // - the user clicks on an app notification created by a service worker
-  //   `messaging.setBackgroundMessageHandler` handler.
-  messaging.onMessage(function(payload) {
-    console.log('Message received. ', payload);
-    // [START_EXCLUDE]
-    // Update the UI to include the received message.
-//     appendMessage(payload);
-    // [END_EXCLUDE]
-  });
-  // [END receive_message]
+        
   function resetUI() {
 //     clearMessages();
     showToken('loading...');
