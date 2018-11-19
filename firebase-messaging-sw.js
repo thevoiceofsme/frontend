@@ -7,7 +7,7 @@
  // Initialize the Firebase app in the service worker by passing in the
  // messagingSenderId.
  firebase.initializeApp({
-   'messagingSenderId': '103953800507'
+   'messagingSenderId': '984905212636'
  });
  // Retrieve an instance of Firebase Messaging so that it can handle background
  // messages.
